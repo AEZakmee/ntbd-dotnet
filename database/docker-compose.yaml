@@ -1,0 +1,15 @@
+version: "3.4"
+services:
+  demo-database:
+    container_name: demo-database
+    image: postgres:13.2
+    volumes:
+      - ~/demo-database-1:/var/lib/postgresql/data
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres-primary
+      POSTGRES_PASSWORD: LocalPassword
+      POSTGRES_DB: demo-database
+    ports:
+      - "5432:5432"
