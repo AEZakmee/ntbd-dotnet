@@ -4,7 +4,7 @@ services:
     container_name: demo-database
     image: postgres:13.2
     volumes:
-      - ~/demo-database-1:/var/lib/postgresql/data
+      - ~/demo-database-3:/var/lib/postgresql/data
       - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
     restart: always
     environment:

@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MyApp.Data;
+using App.Data;
 
-namespace MyProject
+namespace App
 {
     public class Startup
     {
@@ -20,7 +20,7 @@ namespace MyProject
         {
             services.AddDbContext<DataContext>(options =>
                 options.UseNpgsql(_configuration.GetConnectionString("MyConnectionString")));
-
+                
             services.AddControllers();
         }
 

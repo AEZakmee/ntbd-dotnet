@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 
-namespace MyApp
+namespace App
 {
     class Program
     {
@@ -13,14 +13,14 @@ namespace MyApp
 
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
+                // .ConfigureLogging(logging =>
+                // {
+                //     logging.ClearProviders();
+                //     logging.AddConsole();
+                // })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<MyProject.Startup>();
+                    webBuilder.UseStartup<App.Startup>();
                 });
     }
 }
