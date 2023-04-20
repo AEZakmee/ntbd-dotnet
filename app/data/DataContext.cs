@@ -17,7 +17,12 @@ namespace App.Data
     public class DataEntity
     {
         public int id { get; set; }
-        public string? name { get; set; }
+        public string name { get; set; }
+
+        public DataEntity() 
+        {
+            name = "";
+        }
     }
 
     public class QueryEntity
@@ -29,6 +34,19 @@ namespace App.Data
         public QueryEntity()
         {
             query = "";
+        }
+    }
+
+    public class DataResponse 
+    {
+        public double avarageExecutionTime { get; set; }
+        public List<QueryEntity> similarQueries { get; set; }
+        public List<DataEntity> data { get; set; }
+
+        public DataResponse()
+        {
+            similarQueries = new List<QueryEntity>();
+            data = new List<DataEntity>();
         }
     }
 }

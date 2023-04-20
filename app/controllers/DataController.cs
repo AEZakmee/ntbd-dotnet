@@ -16,10 +16,34 @@ namespace App.Controllers
             _dataContext = dataContext;
         }
 
-       [HttpGet]
-        public IEnumerable<DataEntity> Get()
+       [HttpGet("filter")]
+        public DataResponse Get([FromQuery] string name)
         {
+            var query = _dataContext.dataentities
+                .Where(data => data.name == name)
+                .Select(data => new DataEntity {
+                    id = data.id,
+                    name = data.name
+                });
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var data = query.ToList();
+            stopwatch.Stop();
+
+            string rawQuery = query.ToQueryString().Replace("\n", " ");
+
+            var queryData = saveQuery(rawQuery, stopwatch.ElapsedMilliseconds);
+            var response = exportAnswer(queryData);
+            response.data = data;
+
+            return response;
+        }
+
+        [HttpGet("all")]
+        public DataResponse Get()
+        {
             var query = _dataContext.dataentities
                 .Select(data => new DataEntity {
                     id = data.id,
@@ -35,35 +59,43 @@ namespace App.Controllers
 
             string rawQuery = query.ToQueryString().Replace("\n", " ");
 
+            var queryData = saveQuery(rawQuery, stopwatch.ElapsedMilliseconds);
+            var response = exportAnswer(queryData);
+            response.data = data;
+
+            return response;
+        }
+
+        private QueryEntity saveQuery(String rawQuery, long executiontime) {
+
             var queryData = new QueryEntity {
                 query = rawQuery.ToString() ?? "",
-                executiontime = stopwatch.ElapsedMilliseconds,
+                executiontime = executiontime,
             };
 
             _dataContext.queries.Add(queryData);
             _dataContext.SaveChanges();
     
-            logSimilarCompanies(queryData);
-
-            return data;
+            return queryData;
         }
 
-        private void logSimilarCompanies(QueryEntity queryData) {
+        private DataResponse exportAnswer(QueryEntity queryData) {
             List<QueryEntity> allQueries = _dataContext.queries.ToList();
             List<QueryEntity> similarQueries = allQueries.Where(q => QueryComparer.AreQueriesSimilar(q.query, queryData.query)).ToList();
 
-            Console.WriteLine("\n\n\n");
             double totalExecutionTime = 0.0;
             foreach (QueryEntity queryEntity in similarQueries)
             {
-                Console.WriteLine("{0}: {1}ms", queryEntity.query, queryEntity.executiontime);
                 totalExecutionTime += queryEntity.executiontime;
             }
 
-            // Calculate the average execution time
             double averageExecutionTime = totalExecutionTime / similarQueries.Count;
-            Console.WriteLine("Average execution time: {0}ms", averageExecutionTime);
-            Console.WriteLine("\n\n\n");
+            
+            DataResponse response = new DataResponse();
+            response.similarQueries = similarQueries;
+            response.avarageExecutionTime = averageExecutionTime;
+
+            return response;
         }
     }
 
